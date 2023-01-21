@@ -24,21 +24,18 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-# Install aaPanel
-wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && sudo bash install.sh aapanel
+# Install Portainer
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 
-# Install dokku
-wget https://dokku.com/install/v0.29.4/bootstrap.sh
-sudo DOKKU_TAG=v0.29.4 bash bootstrap.sh
-# cat ~/.ssh/authorized_keys | dokku ssh-keys:add admin
-# dokku domains:set-global pauly.ru
+# Install EasyPanel
+sudo docker run --rm -it -v /etc/easypanel:/etc/easypanel -v /var/run/docker.sock:/var/run/docker.sock:ro easypanel/easypanel setup
 
 # Reboot part
 read -n 1 -p "Do uou want to reboot to apply settings (y/n)? " answer
 printf "\n\n"
 if [[ $answer == "y" ]]; then
   echo "Rebooting in 3 seconds"
-  sudo reboot -f
+  sudo reboot
 else
   echo "No reboot"
 fi
